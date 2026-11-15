@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hrishik18/kvtp-source-slm/data/schemas/preference_pair.schema.json",
+  "title": "KVTP Human Preference Alignment Record",
+  "description": "Schema supporting both binary KTO ratings and pairwise DPO chosen/rejected preference data collected from practitioner review.",
+  "type": "object",
+  "required": [
+    "record_id",
+    "alignment_mode",
+    "question",
+    "question_language",
+    "retrieved_sources",
+    "reviewer_id",
+    "reviewed_at"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "description": "Unique identifier for the preference example."
+    },
+    "alignment_mode": {
+      "type": "string",
+      "enum": ["dpo_pairwise", "kto_binary"],
+      "description": "Whether this record captures a paired chosen/rejected preference (DPO) or a single binary desirability label (KTO)."
+    },
+    "question": {
+      "type": "string",
+      "minLength": 3
+    },
+    "question_language": {
+      "type": "string",
+      "enum": ["en", "gu", "hi", "hinglish", "gujlish"]
+    },
+    "retrieved_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source_ref", "verbatim_gujarati", "is_gold_passage"],
+        "properties": {
+          "source_ref": {
+            "type": "string"
+          },
+          "verbatim_gujarati": {
+            "type": "string"
+          },
+          "is_gold_passage": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "chosen_response": {
+      "type": "string",
+      "description": "Faithful practitioner-approved or practitioner-edited response (required for dpo_pairwise)."
+    },
+    "rejected_response": {
+      "type": "string",
+      "description": "Suboptimal or conceptually distorted response (required for dpo_pairwise)."
+    },
+    "candidate_response": {
+      "type": "string",
+      "description": "Single evaluated response when alignment_mode is kto_binary."
+    },
+    "kto_label": {
+      "type": "boolean",
+      "description": "True if faithful/desirable, false if distorted/undesirable (used for kto_binary)."
+    },
+    "rejection_tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "conceptual_flattening",
+          "tradition_drift",
+          "archaic_gujarati_misread",
+          "unsupported_inference",
+          "fabricated_citation",
+          "missing_abstention",
+          "tone_mismatch"
+        ]
+      }
+    },
+    "reviewer_notes": {
+      "type": "string"
+    },
+    "reviewer_id": {
+      "type": "string",
+      "description": "Pseudonymous reviewer handle for inter-annotator agreement tracking."
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "alignment_mode": { "const": "dpo_pairwise" } }
+      },
+      "then": {
+        "required": ["chosen_response", "rejected_response"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "alignment_mode": { "const": "kto_binary" } }
+      },
+      "then": {
+        "required": ["candidate_response", "kto_label"]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hrishik18/kvtp-source-slm/data/schemas/glossary_entry.schema.json",
+  "title": "KVTP Canonical Glossary Entry",
+  "description": "Schema for locking philosophical terminology from Shrimad Rajchandra's Gujarati, Sanskrit, and Prakrit writings.",
+  "type": "object",
+  "required": [
+    "term_id",
+    "term_gujarati",
+    "transliteration",
+    "source_language",
+    "approved_explanation_en",
+    "forbidden_flattening_terms",
+    "canonical_examples"
+  ],
+  "properties": {
+    "term_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Stable snake_case identifier, e.g. bhed_gyan or samkit."
+    },
+    "term_gujarati": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Term in Gujarati script."
+    },
+    "term_devanagari": {
+      "type": "string",
+      "description": "Optional Sanskrit, Prakrit, or Hindi form in Devanagari script."
+    },
+    "transliteration": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Standard Latin transliteration used in English explanations."
+    },
+    "source_language": {
+      "type": "string",
+      "enum": ["gujarati", "sanskrit", "prakrit", "hindi"]
+    },
+    "preferred_rendering_policy": {
+      "type": "string",
+      "enum": ["retain_transliteration_with_gloss", "translate_directly"],
+      "default": "retain_transliteration_with_gloss"
+    },
+    "approved_explanation_en": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Human-reviewed philosophical meaning in English."
+    },
+    "forbidden_flattening_terms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Oversimplified or misleading English words that automated checks flag during evaluation."
+    },
+    "canonical_examples": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source_ref", "verbatim_gujarati"],
+        "properties": {
+          "source_ref": {
+            "type": "string",
+            "description": "Canonical citation such as Atmasiddhi Gatha 43 or Vachanamrut Patrank 504."
+          },
+          "verbatim_gujarati": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
